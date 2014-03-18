@@ -1,0 +1,6 @@
+<sortSelector>
+	<methods length="2">
+		<string>QuickSort</string>
+		<string>BubbleSort</string>
+	</methods>
+</sortSelector>
