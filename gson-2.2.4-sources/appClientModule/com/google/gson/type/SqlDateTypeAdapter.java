@@ -16,8 +16,8 @@
 
 package com.google.gson.type;
 
-import com.google.gson.bind.Gson;
 import com.google.gson.exception.JsonSyntaxException;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -37,7 +37,7 @@ import java.text.SimpleDateFormat;
 public final class SqlDateTypeAdapter extends TypeAdapter<java.sql.Date> {
   public static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
     @SuppressWarnings("unchecked") // we use a runtime check to make sure the 'T's equal
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+    public <T> TypeAdapter<T> create(AdapterCreator adapterCreator, TypeToken<T> typeToken) {
       return typeToken.getRawType() == java.sql.Date.class
           ? (TypeAdapter<T>) new SqlDateTypeAdapter() : null;
     }

@@ -16,6 +16,7 @@
 package com.google.gson.type;
 
 import com.google.gson.bind.Gson;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -25,12 +26,12 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 final class TypeAdapterRuntimeTypeWrapper<T> extends TypeAdapter<T> {
-  private final Gson context;
+  private final AdapterCreator adapterCreator;
   private final TypeAdapter<T> delegate;
   private final Type type;
 
-  TypeAdapterRuntimeTypeWrapper(Gson context, TypeAdapter<T> delegate, Type type) {
-    this.context = context;
+  TypeAdapterRuntimeTypeWrapper(AdapterCreator adapterCreator, TypeAdapter<T> delegate, Type type) {
+    this.adapterCreator = adapterCreator;
     this.delegate = delegate;
     this.type = type;
   }
@@ -52,7 +53,7 @@ final class TypeAdapterRuntimeTypeWrapper<T> extends TypeAdapter<T> {
     TypeAdapter chosen = delegate;
     Type runtimeType = getRuntimeTypeIfMoreSpecific(type, value);
     if (runtimeType != type) {
-      TypeAdapter runtimeTypeAdapter = context.getAdapter(TypeToken.get(runtimeType));
+      TypeAdapter runtimeTypeAdapter = adapterCreator.getAdapter(TypeToken.get(runtimeType));
       if (!(runtimeTypeAdapter instanceof ReflectiveTypeAdapterFactory.Adapter)) {
         // The user registered a type adapter for the runtime type, so we will use that
         chosen = runtimeTypeAdapter;

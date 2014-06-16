@@ -24,6 +24,7 @@ import com.google.gson.exception.JsonIOException;
 import com.google.gson.exception.JsonParseException;
 import com.google.gson.exception.JsonSyntaxException;
 import com.google.gson.exception.MalformedJsonException;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.serializer.JsonSerializationContext;
 import com.google.gson.serializer.JsonSerializer;
@@ -366,7 +367,25 @@ public final class Gson {
       threadCalls.put(type, call);
 
       for (TypeAdapterFactory factory : factories) {
-        TypeAdapter<T> candidate = factory.create(this, type);
+//        TypeAdapter<T> candidate = factory.create(this, type);
+        TypeAdapter<T> candidate = factory.create(new AdapterCreator() {
+
+			@Override
+			public TypeAdapter<?> getAdapter(TypeToken<?> typeToken) {
+				return this.getAdapter(typeToken);
+			}
+
+			@Override
+			public TypeAdapter<Object> getAdapter(Class<? extends Object> class1) {
+				return this.getAdapter(class1);
+			}
+
+			@Override
+			public <T> TypeAdapter<T> getDelegateAdapter(
+					TypeAdapterFactory skipPast, TypeToken<T> type) {
+				// TODO Auto-generated method stub
+				return null;
+			}}, type);
         if (candidate != null) {
           call.setDelegate(candidate);
           typeTokenCache.put(type, candidate);
@@ -440,7 +459,25 @@ public final class Gson {
         continue;
       }
 
-      TypeAdapter<T> candidate = factory.create(this, type);
+      TypeAdapter<T> candidate = factory.create(new AdapterCreator() {
+		
+		@Override
+		public TypeAdapter<Object> getAdapter(Class<? extends Object> class1) {
+			return this.getAdapter(class1);
+		}
+		
+		@Override
+		public TypeAdapter<?> getAdapter(TypeToken<?> typeToken) {
+			return this.getAdapter(typeToken);
+		}
+
+		@Override
+		public <T> TypeAdapter<T> getDelegateAdapter(
+				TypeAdapterFactory skipPast, TypeToken<T> type) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}, type);
       if (candidate != null) {
         return candidate;
       }

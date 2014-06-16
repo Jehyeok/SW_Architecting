@@ -17,7 +17,7 @@
 package com.google.gson.type;
 
 import com.google.gson.bind.ConstructorConstructor;
-import com.google.gson.bind.Gson;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -39,7 +39,7 @@ public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
     this.constructorConstructor = constructorConstructor;
   }
 
-  public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+  public <T> TypeAdapter<T> create(AdapterCreator adapterCreator, TypeToken<T> typeToken) {
     Type type = typeToken.getType();
 
     Class<? super T> rawType = typeToken.getRawType();
@@ -48,11 +48,11 @@ public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
     }
 
     Type elementType = $Gson$Types.getCollectionElementType(type, rawType);
-    TypeAdapter<?> elementTypeAdapter = gson.getAdapter(TypeToken.get(elementType));
+    TypeAdapter<?> elementTypeAdapter = adapterCreator.getAdapter(TypeToken.get(elementType));
     ObjectConstructor<T> constructor = constructorConstructor.get(typeToken);
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // create() doesn't define a type parameter
-    TypeAdapter<T> result = new Adapter(gson, elementType, elementTypeAdapter, constructor);
+    TypeAdapter<T> result = new Adapter(adapterCreator, elementType, elementTypeAdapter, constructor);
     return result;
   }
 
@@ -60,11 +60,11 @@ public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
     private final TypeAdapter<E> elementTypeAdapter;
     private final ObjectConstructor<? extends Collection<E>> constructor;
 
-    public Adapter(Gson context, Type elementType,
+    public Adapter(AdapterCreator adapterCreator, Type elementType,
         TypeAdapter<E> elementTypeAdapter,
         ObjectConstructor<? extends Collection<E>> constructor) {
       this.elementTypeAdapter =
-          new TypeAdapterRuntimeTypeWrapper<E>(context, elementTypeAdapter, elementType);
+          new TypeAdapterRuntimeTypeWrapper<E>(adapterCreator, elementTypeAdapter, elementType);
       this.constructor = constructor;
     }
 

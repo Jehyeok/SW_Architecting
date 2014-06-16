@@ -19,8 +19,8 @@ package com.google.gson.type;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.bind.ConstructorConstructor;
 import com.google.gson.bind.Excluder;
-import com.google.gson.bind.Gson;
 import com.google.gson.exception.JsonSyntaxException;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.setter.FieldNamingStrategy;
 import com.google.gson.stream.JsonReader;
@@ -60,7 +60,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     return serializedName == null ? fieldNamingPolicy.translateName(f) : serializedName.value();
   }
 
-  public <T> TypeAdapter<T> create(Gson gson, final TypeToken<T> type) {
+  public <T> TypeAdapter<T> create(AdapterCreator adapterCreator, final TypeToken<T> type) {
     Class<? super T> raw = type.getRawType();
 
     if (!Object.class.isAssignableFrom(raw)) {
@@ -68,23 +68,23 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     }
 
     ObjectConstructor<T> constructor = constructorConstructor.get(type);
-    return new Adapter<T>(constructor, getBoundFields(gson, type, raw));
+    return new Adapter<T>(constructor, getBoundFields(adapterCreator, type, raw));
   }
 
   private ReflectiveTypeAdapterFactory.BoundField createBoundField(
-      final Gson context, final Field field, final String name,
+      final AdapterCreator adapterCreator, final Field field, final String name,
       final TypeToken<?> fieldType, boolean serialize, boolean deserialize) {
     final boolean isPrimitive = Primitives.isPrimitive(fieldType.getRawType());
 
     // special casing primitives here saves ~5% on Android...
     return new ReflectiveTypeAdapterFactory.BoundField(name, serialize, deserialize) {
-      final TypeAdapter<?> typeAdapter = context.getAdapter(fieldType);
+      final TypeAdapter<?> typeAdapter = adapterCreator.getAdapter(fieldType);
       @SuppressWarnings({"unchecked", "rawtypes"}) // the type adapter and field type always agree
       @Override void write(JsonWriter writer, Object value)
           throws IOException, IllegalAccessException {
         Object fieldValue = field.get(value);
         TypeAdapter t =
-          new TypeAdapterRuntimeTypeWrapper(context, this.typeAdapter, fieldType.getType());
+          new TypeAdapterRuntimeTypeWrapper(adapterCreator, this.typeAdapter, fieldType.getType());
         t.write(writer, fieldValue);
       }
       @Override void read(JsonReader reader, Object value)
@@ -97,7 +97,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
     };
   }
 
-  private Map<String, BoundField> getBoundFields(Gson context, TypeToken<?> type, Class<?> raw) {
+  private Map<String, BoundField> getBoundFields(AdapterCreator adapterCreator, TypeToken<?> type, Class<?> raw) {
     Map<String, BoundField> result = new LinkedHashMap<String, BoundField>();
     if (raw.isInterface()) {
       return result;
@@ -114,7 +114,7 @@ public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
         }
         field.setAccessible(true);
         Type fieldType = $Gson$Types.resolve(type.getType(), raw, field.getGenericType());
-        BoundField boundField = createBoundField(context, field, getFieldName(field),
+        BoundField boundField = createBoundField(adapterCreator, field, getFieldName(field),
             TypeToken.get(fieldType), serialize, deserialize);
         BoundField previous = result.put(boundField.name, boundField);
         if (previous != null) {

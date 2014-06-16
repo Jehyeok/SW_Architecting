@@ -17,10 +17,10 @@
 package com.google.gson.type;
 
 import com.google.gson.bind.ConstructorConstructor;
-import com.google.gson.bind.Gson;
 import com.google.gson.element.JsonElement;
 import com.google.gson.element.JsonPrimitive;
 import com.google.gson.exception.JsonSyntaxException;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonReaderInternalAccess;
@@ -111,7 +111,7 @@ public final class MapTypeAdapterFactory implements TypeAdapterFactory {
     this.complexMapKeySerialization = complexMapKeySerialization;
   }
 
-  public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+  public <T> TypeAdapter<T> create(AdapterCreator adapterCreator, TypeToken<T> typeToken) {
     Type type = typeToken.getType();
 
     Class<? super T> rawType = typeToken.getRawType();
@@ -121,13 +121,13 @@ public final class MapTypeAdapterFactory implements TypeAdapterFactory {
 
     Class<?> rawTypeOfSrc = $Gson$Types.getRawType(type);
     Type[] keyAndValueTypes = $Gson$Types.getMapKeyAndValueTypes(type, rawTypeOfSrc);
-    TypeAdapter<?> keyAdapter = getKeyAdapter(gson, keyAndValueTypes[0]);
-    TypeAdapter<?> valueAdapter = gson.getAdapter(TypeToken.get(keyAndValueTypes[1]));
+    TypeAdapter<?> keyAdapter = getKeyAdapter(adapterCreator, keyAndValueTypes[0]);
+    TypeAdapter<?> valueAdapter = adapterCreator.getAdapter(TypeToken.get(keyAndValueTypes[1]));
     ObjectConstructor<T> constructor = constructorConstructor.get(typeToken);
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     // we don't define a type parameter for the key or value types
-    TypeAdapter<T> result = new Adapter(gson, keyAndValueTypes[0], keyAdapter,
+    TypeAdapter<T> result = new Adapter(adapterCreator, keyAndValueTypes[0], keyAdapter,
         keyAndValueTypes[1], valueAdapter, constructor);
     return result;
   }
@@ -135,10 +135,10 @@ public final class MapTypeAdapterFactory implements TypeAdapterFactory {
   /**
    * Returns a type adapter that writes the value as a string.
    */
-  private TypeAdapter<?> getKeyAdapter(Gson context, Type keyType) {
+  private TypeAdapter<?> getKeyAdapter(AdapterCreator adapterCreator, Type keyType) {
     return (keyType == boolean.class || keyType == Boolean.class)
         ? TypeAdapters.BOOLEAN_AS_STRING
-        : context.getAdapter(TypeToken.get(keyType));
+        : adapterCreator.getAdapter(TypeToken.get(keyType));
   }
 
   private final class Adapter<K, V> extends TypeAdapter<Map<K, V>> {
@@ -146,13 +146,13 @@ public final class MapTypeAdapterFactory implements TypeAdapterFactory {
     private final TypeAdapter<V> valueTypeAdapter;
     private final ObjectConstructor<? extends Map<K, V>> constructor;
 
-    public Adapter(Gson context, Type keyType, TypeAdapter<K> keyTypeAdapter,
+    public Adapter(AdapterCreator adapterCreator, Type keyType, TypeAdapter<K> keyTypeAdapter,
         Type valueType, TypeAdapter<V> valueTypeAdapter,
         ObjectConstructor<? extends Map<K, V>> constructor) {
       this.keyTypeAdapter =
-        new TypeAdapterRuntimeTypeWrapper<K>(context, keyTypeAdapter, keyType);
+        new TypeAdapterRuntimeTypeWrapper<K>(adapterCreator, keyTypeAdapter, keyType);
       this.valueTypeAdapter =
-        new TypeAdapterRuntimeTypeWrapper<V>(context, valueTypeAdapter, valueType);
+        new TypeAdapterRuntimeTypeWrapper<V>(adapterCreator, valueTypeAdapter, valueType);
       this.constructor = constructor;
     }
 

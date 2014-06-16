@@ -19,6 +19,7 @@ package com.google.gson.bind;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.Since;
 import com.google.gson.annotations.Until;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.setter.ExclusionStrategy;
 import com.google.gson.setter.FieldAttributes;
@@ -108,7 +109,8 @@ public final class Excluder implements TypeAdapterFactory, Cloneable {
     return result;
   }
 
-  public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> type) {
+  public <T> TypeAdapter<T> create(final AdapterCreator adapaterCreator,
+			final TypeToken<T> type) {
     Class<?> rawType = type.getRawType();
     final boolean skipSerialize = excludeClass(rawType, true);
     final boolean skipDeserialize = excludeClass(rawType, false);
@@ -141,7 +143,7 @@ public final class Excluder implements TypeAdapterFactory, Cloneable {
         TypeAdapter<T> d = delegate;
         return d != null
             ? d
-            : (delegate = gson.getDelegateAdapter(Excluder.this, type));
+            : (delegate = adapaterCreator.getDelegateAdapter(Excluder.this, type));
       }
     };
   }
@@ -248,4 +250,5 @@ public final class Excluder implements TypeAdapterFactory, Cloneable {
     }
     return true;
   }
+
 }

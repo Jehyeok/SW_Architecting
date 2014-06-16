@@ -16,9 +16,9 @@
 
 package com.google.gson.type;
 
-import com.google.gson.bind.Gson;
 import com.google.gson.deserializer.JsonDeserializer;
 import com.google.gson.element.JsonElement;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.serializer.JsonSerializer;
 import com.google.gson.stream.JsonReader;
@@ -36,7 +36,7 @@ import java.io.IOException;
 public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
   private final JsonSerializer<T> serializer;
   private final JsonDeserializer<T> deserializer;
-  private final Gson gson;
+  private final AdapterCreator adapaterCreator;
   private final TypeToken<T> typeToken;
   private final TypeAdapterFactory skipPast;
 
@@ -44,10 +44,10 @@ public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
   private TypeAdapter<T> delegate;
 
   private TreeTypeAdapter(JsonSerializer<T> serializer, JsonDeserializer<T> deserializer,
-      Gson gson, TypeToken<T> typeToken, TypeAdapterFactory skipPast) {
+      AdapterCreator adapterCreator, TypeToken<T> typeToken, TypeAdapterFactory skipPast) {
     this.serializer = serializer;
     this.deserializer = deserializer;
-    this.gson = gson;
+    this.adapaterCreator = adapterCreator;
     this.typeToken = typeToken;
     this.skipPast = skipPast;
   }
@@ -60,7 +60,7 @@ public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
     if (value.isJsonNull()) {
       return null;
     }
-    return deserializer.deserialize(value, typeToken.getType(), gson.deserializationContext);
+    return deserializer.deserialize(value, typeToken.getType(), adapaterCreator.deserializationContext);
   }
 
   @Override public void write(JsonWriter out, T value) throws IOException {
@@ -72,7 +72,7 @@ public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
       out.nullValue();
       return;
     }
-    JsonElement tree = serializer.serialize(value, typeToken.getType(), gson.serializationContext);
+    JsonElement tree = serializer.serialize(value, typeToken.getType(), adapaterCreator.serializationContext);
     Streams.write(tree, out);
   }
 
@@ -80,7 +80,7 @@ public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
     TypeAdapter<T> d = delegate;
     return d != null
         ? d
-        : (delegate = gson.getDelegateAdapter(skipPast, typeToken));
+        : (delegate = adapaterCreator.getDelegateAdapter(skipPast, typeToken));
   }
 
   /**
@@ -132,13 +132,13 @@ public final class TreeTypeAdapter<T> extends TypeAdapter<T> {
     }
 
     @SuppressWarnings("unchecked") // guarded by typeToken.equals() call
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+    public <T> TypeAdapter<T> create(AdapterCreator adapterCreator, TypeToken<T> type) {
       boolean matches = exactType != null
           ? exactType.equals(type) || matchRawType && exactType.getType() == type.getRawType()
           : hierarchyType.isAssignableFrom(type.getRawType());
       return matches
           ? new TreeTypeAdapter<T>((JsonSerializer<T>) serializer,
-              (JsonDeserializer<T>) deserializer, gson, type, this)
+              (JsonDeserializer<T>) deserializer, adapterCreator, type, this)
           : null;
     }
   }

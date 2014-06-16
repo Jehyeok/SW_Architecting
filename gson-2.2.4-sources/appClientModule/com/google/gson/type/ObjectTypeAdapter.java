@@ -16,8 +16,8 @@
 
 package com.google.gson.type;
 
-import com.google.gson.bind.Gson;
 import com.google.gson.element.LinkedTreeMap;
+import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -35,18 +35,18 @@ import java.util.Map;
 public final class ObjectTypeAdapter extends TypeAdapter<Object> {
   public static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
     @SuppressWarnings("unchecked")
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+    public <T> TypeAdapter<T> create(AdapterCreator adapterCreator, TypeToken<T> type) {
       if (type.getRawType() == Object.class) {
-        return (TypeAdapter<T>) new ObjectTypeAdapter(gson);
+        return (TypeAdapter<T>) new ObjectTypeAdapter(adapterCreator);
       }
       return null;
     }
   };
 
-  private final Gson gson;
+  private final AdapterCreator adapterCreator;
 
-  private ObjectTypeAdapter(Gson gson) {
-    this.gson = gson;
+  private ObjectTypeAdapter(AdapterCreator adapterCreator) {
+    this.adapterCreator = adapterCreator;
   }
 
   @Override public Object read(JsonReader in) throws IOException {
@@ -95,7 +95,7 @@ public final class ObjectTypeAdapter extends TypeAdapter<Object> {
       return;
     }
 
-    TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) gson.getAdapter(value.getClass());
+    TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) adapterCreator.getAdapter(value.getClass());
     if (typeAdapter instanceof ObjectTypeAdapter) {
       out.beginObject();
       out.endObject();
