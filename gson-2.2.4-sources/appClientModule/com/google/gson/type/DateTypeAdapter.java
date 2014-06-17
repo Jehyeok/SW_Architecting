@@ -17,7 +17,6 @@
 package com.google.gson.type;
 
 import com.google.gson.exception.JsonSyntaxException;
-import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;

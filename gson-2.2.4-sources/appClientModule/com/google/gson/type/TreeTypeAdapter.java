@@ -18,7 +18,6 @@ package com.google.gson.type;
 
 import com.google.gson.deserializer.JsonDeserializer;
 import com.google.gson.element.JsonElement;
-import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.serializer.JsonSerializer;
 import com.google.gson.stream.JsonReader;

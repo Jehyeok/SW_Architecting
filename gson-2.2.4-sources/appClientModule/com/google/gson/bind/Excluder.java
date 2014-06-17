@@ -19,12 +19,12 @@ package com.google.gson.bind;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.Since;
 import com.google.gson.annotations.Until;
-import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.setter.ExclusionStrategy;
 import com.google.gson.setter.FieldAttributes;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.google.gson.type.AdapterCreator;
 import com.google.gson.type.TypeAdapter;
 import com.google.gson.type.TypeAdapterFactory;
 

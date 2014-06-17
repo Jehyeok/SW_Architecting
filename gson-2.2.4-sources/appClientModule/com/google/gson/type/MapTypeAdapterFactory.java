@@ -20,7 +20,6 @@ import com.google.gson.bind.ConstructorConstructor;
 import com.google.gson.element.JsonElement;
 import com.google.gson.element.JsonPrimitive;
 import com.google.gson.exception.JsonSyntaxException;
-import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonReaderInternalAccess;

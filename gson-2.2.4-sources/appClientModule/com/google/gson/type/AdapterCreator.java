@@ -1,10 +1,8 @@
-package com.google.gson.jehyeok;
+package com.google.gson.type;
 
 import com.google.gson.deserializer.JsonDeserializationContext;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.serializer.JsonSerializationContext;
-import com.google.gson.type.TypeAdapter;
-import com.google.gson.type.TypeAdapterFactory;
 
 public interface AdapterCreator {
 	JsonDeserializationContext deserializationContext = null;

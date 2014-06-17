@@ -18,7 +18,6 @@ package com.google.gson.type;
 
 import com.google.gson.bind.Gson;
 import com.google.gson.bind.GsonBuilder;
-import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 
 /**

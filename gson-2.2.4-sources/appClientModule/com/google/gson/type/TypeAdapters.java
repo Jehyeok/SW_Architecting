@@ -43,7 +43,6 @@ import com.google.gson.element.JsonPrimitive;
 import com.google.gson.element.LazilyParsedNumber;
 import com.google.gson.exception.JsonIOException;
 import com.google.gson.exception.JsonSyntaxException;
-import com.google.gson.jehyeok.AdapterCreator;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
